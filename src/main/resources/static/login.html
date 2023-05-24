@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>登录页面</title>
+
+    <!-- Bootstrap -->
+    <link href="js/bootstrap.min.css" rel="stylesheet">
+
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+<header class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1 style="color: hotpink"><small>欢迎使用</small>VRChat照片墙</h1>
+        </div>
+    </div>
+</header>
+<section class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <!--面板组件开始-->
+            <div class="panel panel-default">
+                <div class="panel-heading" style="background-color: black;color: #ffc600">登录</div>
+                <div class="panel-body">
+                    <!--form表单开始-->
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="username" :value="username" class="form-control"
+                                       id="inputEmail3"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" name="password" :value="password" class="form-control"
+                                       id="inputPassword3"
+                                       placeholder="请输入密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="rem"> 记住用户名和密码
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="button" class="btn btn-default" @click="login()">登录</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!--form表单结束-->
+                </div>
+            </div>
+            <!--面板组件结束-->
+        </div>
+    </div>
+</section>
+<footer class="container" style="text-align: center;color: white">
+    Copyright © 福建捏猫猫滴科技有限公司版权所有 京ICP备1145141919号-810
+</footer>
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="js/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="js/bootstrap.min.js"></script>
+<!--引入CDN服务器的框架文件-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.js"></script>
+<script>
+    let v = new Vue({
+        el: "form",
+        data: {
+            username: "",
+            password: ""
+        },
+        methods: {
+            login: function () {
+                let data = new FormData(document.querySelector("form"));
+                axios.post("/login", data).then(function (response) {
+                    if (response.data == 1) {
+                        alert("登陆成功");
+                        location.href = "/admin.html";
+                    } else if (response.data == 2) {
+                        alert("用户不存在");
+                    } else {
+                        alert("密码错误");
+                    }
+                })
+            }
+        }
+    })
+    let cookieArr = document.cookie.split(";");
+    for (let cookieStr of cookieArr) {
+        let arr = cookieStr.split("=");
+        let name = arr[0].trim();
+        let value = arr[1];
+        if (name == "username") {
+            v.username = value;
+        }
+        if (name == "password") {
+            v.password = value;
+        }
+    }
+</script>
+</body>
+</html>

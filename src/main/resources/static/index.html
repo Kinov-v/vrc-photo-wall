@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>VRChat照片墙</title>
+
+    <!-- Bootstrap -->
+    <link href="js/bootstrap.min.css" rel="stylesheet">
+
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+
+        /*导航条样式*/
+        .navbar {
+            background: linear-gradient(99.4deg,#00a3ff .43%,#00b6f7 99.04%);
+            border: 0; /*去掉边框*/
+            margin-top: 10px;
+        }
+
+        .navbar-brand > img {
+            position: relative;
+            bottom: 10px;
+        }
+
+        /*搜索框样式*/
+        form > input {
+            background-color: #383838;
+            height: 30px;
+            border-radius: 30px;
+            border: 0;
+            padding: 10px 20px;
+            color: #a8a8a8;
+            margin-top: 10px;
+        }
+
+        form > button {
+            background-color: rgba(0, 0, 0, 0);
+            color: #a8a8a8;
+            border: 0;
+            position: relative;
+            right: 40px;
+        }
+
+        /*瀑布流相关样式*/
+        .grid-item {
+            width: 200px;
+            margin: 0 10px 10px 0;
+        }
+
+        /*右侧边栏样式*/
+        .list-group-item {
+            background-color: white;
+            color: hotpink;
+            border: 0;
+        }
+
+        .list-head {
+            background-color: hotpink;
+            color: white;
+        }
+
+        .well {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            border: 0;
+        }
+
+        /*蓝条相关样式*/
+        .blue_div {
+            width: 100%;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.15);
+            color: rgba(0, 0, 0, 100%);
+            text-align: center;
+            /*让蓝条显示在图片的上面*/
+            position: absolute;
+            /*底部显示*/
+            bottom: 0;
+            display: none; /*让元素隐藏*/
+        }
+
+        .blue_div > p {
+            margin: 0;
+        }
+
+        /*图片缩放动画*/
+        img {
+            transition-duration: 1s; /*动画持续时间2秒*/
+        }
+
+        img:hover {
+            transform: scale(1.2); /*缩放1.2倍*/
+        }
+
+        .grid-item {
+            overflow: hidden; /*超出范围不显示*/
+        }
+    </style>
+</head>
+<body>
+<myheader></myheader>
+<section class="container">
+    <!--轮播图开始-->
+    <div class="carousel slide" id="myCarousel">
+        <!-- 轮播（Carousel）指标 -->
+        <ol class="carousel-indicators">
+            <li :class="i==0?'active':''" :data-slide-to="i" data-target="#myCarousel" v-for="(b,i) in arr"></li>
+        </ol>
+        <!-- 轮播（Carousel）项目 -->
+        <div class="carousel-inner">
+            <!--(b,i)b代表当前遍历的每一个元素对象,i代表遍历元素的下标-->
+            <div :class="i==0?'item active':'item'" v-for="(b,i) in arr">
+                <img :src="b.url" alt="First slide">
+                <div class="carousel-caption">标题 1</div>
+            </div>
+
+        </div>
+        <!-- 轮播（Carousel）导航 -->
+        <a class="left carousel-control" data-slide="prev" href="#myCarousel" role="button">
+            <span aria-hidden="true" class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" data-slide="next" href="#myCarousel" role="button">
+            <span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <!--轮播图结束-->
+    <div class="row" style="margin-top: 10px">
+        <div class="col-md-9">
+            <!--瀑布流开始-->
+            <div class="grid">
+                <div class="grid-item" v-for="p in arr">
+                    <a :href="'/detail.html?id='+p.id">
+                        <img :src="p.url" alt="" class="img-responsive">
+                    </a>
+                    <div class="blue_div">
+                        <p>{{p.title}}</p>
+                        <i class="fa fa-eye">{{p.viewCount}}</i>
+                        <i class="fa fa-thumbs-o-up">{{p.likeCount}}</i>
+                    </div>
+                </div>
+            </div>
+            <!--瀑布流结束-->
+        </div>
+        <div class="col-md-3">
+            <rightdiv></rightdiv>
+        </div>
+    </div>
+
+</section>
+<footer class="container">
+    <div class="well">
+        Copyright © 福建捏猫猫滴科技有限公司版权所有 京ICP备1145141919号-810
+    </div>
+</footer>
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="js/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="js/bootstrap.min.js"></script>
+<!--引入瀑布流相关js文件-->
+<script src="js/masonry.pkgd.min.js"></script>
+<!--图片加载完成事件-->
+<script src="js/imagesloaded.pkgd.js"></script>
+<!--引入CDN服务器的框架文件-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.js"></script>
+<!--引入外部的js文件-->
+<script src="js/header.js"></script>
+<script src="js/banner.js"></script>
+<script src="js/product.js"></script>
+<script src="js/right.js"></script>
+<script>
+    //让轮播图开始自己移动
+    $("#myCarousel").carousel("cycle");
+</script>
+</body>
+</html>

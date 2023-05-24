@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>后台管理页面</title>
+
+    <!-- Bootstrap -->
+    <link href="js/bootstrap.min.css" rel="stylesheet">
+
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+
+        header > div > div {
+            height: 50px;
+        }
+
+        section > div > div {
+            height: 1500px;
+        }
+
+        /*左侧边栏样式*/
+        .panel-default, .panel-default > .panel-heading {
+            background-color: rgba(0, 0, 0, 0);
+            color: #eee;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="row">
+        <div class="col-md-3" style="background-color: #282d2f">
+            <a href="/">
+                <img src="images/logo.png" alt="">
+            </a>
+        </div>
+        <div class="col-md-9" style="background-color: #3a4144">
+            <span style="float: right;color: #eee;font-size: 20px;line-height: 50px">
+                <span>{{user.nick}}欢迎你!</span>
+                <a href="javascript:void(0)" @click="logout()">退出登录</a>
+            </span>
+        </div>
+    </div>
+</header>
+<section>
+    <div class="row">
+        <div class="col-md-3" style="background-color: #3a4144;padding: 100px 50px">
+            <!--左侧边栏开始-->
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseOne">
+                                分类管理
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <ol style="list-style-type: none">
+                                <li><a href="/admin.html">分类列表</a></li>
+                                <li><a href="javascript:void(0)" @click="add()">添加分类</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseTwo">
+                                轮播图管理
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ol style="list-style-type: none">
+                                <li><a href="/admin-banner.html">轮播图列表</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseThree">
+                                作品管理
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseThree" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ol style="list-style-type: none">
+                                <li><a href="/admin-product.html">作品列表</a></li>
+                                <li><a href="/insert.html">添加作品</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--左侧边栏结束-->
+        </div>
+        <div class="col-md-9" style="background-color: #282d2f;color: #eee">
+            <h1>欢迎访问VRChat照片墙</h1>
+            <table border="1" style="width: 70%;text-align: center">
+                <caption>分类列表</caption>
+                <tr>
+                    <th>序号</th>
+                    <th>分类名</th>
+                    <th>操作</th>
+                </tr>
+                <tr v-for="(c,i) in arr">
+                    <td>{{i + 1}}</td>
+                    <td>{{c.name}}</td>
+                    <td><a href="javascript:void(0)" @click="del(c.id)">删除</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</section>
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="js/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="js/bootstrap.min.js"></script>
+<!--引入CDN服务器的框架文件-->
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.js"></script>
+<script>
+    let header_v = new Vue({
+        el: "header",
+        data: {
+            user: {}
+        },
+        created: function () {
+            //获取当前登录的用户对象
+            axios.get("/currentUser").then(function (response) {
+                header_v.user = response.data;
+                if (header_v.user == "") {
+                    alert("请先登录!");
+                    location.href = "/login.html";
+                }
+            })
+        },
+        methods: {
+            logout: function () {
+                if (confirm("您确认退出登录吗?")) {
+                    axios.get("/logout").then(function (response) {
+                        location.href = "/";
+                    })
+                }
+            }
+        }
+    })
+
+    let section_v = new Vue({
+        el: "section",
+        data: {
+            arr: []
+        },
+        created: function () {
+            axios.get("/category/select").then(function (response) {
+                section_v.arr = response.data;
+            })
+        },
+        methods: {
+            del: function (id) {
+                if (confirm("您确认删除吗?")) {
+                    axios.get("/category/delete?id=" + id).then(function () {
+                        location.reload();//刷新页面
+                    })
+                }
+            },
+            add: function () {
+                let name = prompt("请输入分类名称");
+                //判断出取消和空内容
+                if (name == null || name.trim() == "") {
+                    return;
+                }
+                axios.get("/category/insert?name=" + name).then(function () {
+                    location.reload();//刷新页面
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

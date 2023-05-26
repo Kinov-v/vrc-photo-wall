@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tech.vrcat.vrc.photo.wall.entity.Banner;
 import tech.vrcat.vrc.photo.wall.mapper.BannerMapper;
+import tech.vrcat.vrc.photo.wall.service.UploadPicService;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,9 @@ import java.util.UUID;
 public class BannerController {
     @Autowired
     BannerMapper mapper;
+
+    @Autowired
+    UploadPicService uploadPicService;
 
     @Value("${dirPath}")
     private String dirPath;
@@ -39,19 +43,20 @@ public class BannerController {
 
     @RequestMapping("/banner/insert")
     public void insert(MultipartFile picFile) throws IOException {
-        String fileName = picFile.getOriginalFilename();
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
-        fileName = UUID.randomUUID() + suffix;
-        File dirFile = new File(dirPath);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();//创建文件夹
-        }
-        String filePath = dirPath + "/" + fileName;
-        //保存文件  异常抛出
-        picFile.transferTo(new File(filePath));
-        //把数据保存到banner表中
+//        String fileName = picFile.getOriginalFilename();
+//        String suffix = fileName.substring(fileName.lastIndexOf("."));
+//        fileName = UUID.randomUUID() + suffix;
+//        File dirFile = new File(dirPath);
+//        if (!dirFile.exists()) {
+//            dirFile.mkdirs();//创建文件夹
+//        }
+//        String filePath = dirPath + "/" + fileName;
+//        //保存文件  异常抛出
+//        picFile.transferTo(new File(filePath));
+//        //把数据保存到banner表中
+        String name = uploadPicService.upload(picFile);
         Banner b = new Banner();
-        b.setUrl("/" + fileName);
+        b.setUrl(name);
         mapper.insert(b);
 
     }

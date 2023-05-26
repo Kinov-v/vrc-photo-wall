@@ -1,0 +1,7 @@
+aliyun:
+  accessKeyId: LTAI5tANW1qhSjSYA5n2tSmJ
+  accessKeySecret: 9rg8JdW55ZsoH2JeTd2Vsi4z4a2olS
+  oss:
+    endpoint: http://oss-cn-fuzhou.aliyuncs.com
+    bucketName: vrc-photo-wall
+    urlPrefix: https://vrc-photo-wall.oss-cn-fuzhou.aliyuncs.com/

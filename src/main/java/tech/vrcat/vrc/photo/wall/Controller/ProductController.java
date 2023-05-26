@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tech.vrcat.vrc.photo.wall.entity.Product;
 import tech.vrcat.vrc.photo.wall.mapper.ProductMapper;
+import tech.vrcat.vrc.photo.wall.service.UploadPicService;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,28 +25,32 @@ public class ProductController {
     @Value("${dirPath}")    //此注解会自动找到application.properties配置文件中的值
     private String dirPath;
 
+    @Autowired
+    UploadPicService uploadPicService;
+
     @RequestMapping("/product/insert")
     public void insert(Product product, MultipartFile picFile) throws IOException {
-        System.out.println("product = " + product + ", picFile = " + picFile);
-        //得到唯一文件名
-        String fileName = picFile.getOriginalFilename();
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
-        fileName = UUID.randomUUID() + suffix;
-        //日期格式化对象
-        SimpleDateFormat f = new SimpleDateFormat("/yyyy/MM/dd/");
-        //new Date()得到的是当前系统时间  /2022/02/28/
-        String datePath = f.format(new Date());
-        File dirFile = new File(dirPath + datePath);
-        if (!dirFile.exists()) {
-            dirFile.mkdirs();//创建文件夹
-        }
-        //得到完整的保存文件的路径
-        String filePath = dirPath + datePath + fileName;
-        //保存文件  异常抛出
-        picFile.transferTo(new File(filePath));
+//        System.out.println("product = " + product + ", picFile = " + picFile);
+//        //得到唯一文件名
+//        String fileName = picFile.getOriginalFilename();
+//        String suffix = fileName.substring(fileName.lastIndexOf("."));
+//        fileName = UUID.randomUUID() + suffix;
+//        //日期格式化对象
+//        SimpleDateFormat f = new SimpleDateFormat("/yyyy/MM/dd/");
+//        //new Date()得到的是当前系统时间  /2022/02/28/
+//        String datePath = f.format(new Date());
+//        File dirFile = new File(dirPath + datePath);
+//        if (!dirFile.exists()) {
+//            dirFile.mkdirs();//创建文件夹
+//        }
+//        //得到完整的保存文件的路径
+//        String filePath = dirPath + datePath + fileName;
+//        //保存文件  异常抛出
+//        picFile.transferTo(new File(filePath));
         //把图片的路径添加到作品对象里面
         //,,,,url,created,categoryId
-        product.setUrl(datePath + fileName);
+        String name = uploadPicService.upload(picFile);
+        product.setUrl(name);
         product.setCreated(new Date());//加不加都行 报错就加
         mapper.insert(product);
     }
